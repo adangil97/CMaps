@@ -1,20 +1,29 @@
 plugins {
     kotlin("multiplatform")
+    kotlin("native.cocoapods")
     id("com.android.library")
     id("org.jetbrains.compose")
 }
 
 kotlin {
     androidTarget()
+    iosX64()
+    iosArm64()
+    iosSimulatorArm64()
 
-    listOf(
-        iosX64(),
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
+    cocoapods {
+        version = "1.0.0"
+        summary = "Some description for the Shared Module"
+        homepage = "Link to the Shared Module homepage"
+        ios.deploymentTarget = "14.1"
+        podfile = project.file("../iosApp/Podfile")
+        framework {
             baseName = "shared"
             isStatic = true
+        }
+        pod("GoogleMaps") {
+            version = "8.2.0"
+            extraOpts += listOf("-compiler-option", "-fmodules")
         }
     }
 
@@ -33,6 +42,9 @@ kotlin {
                 api("androidx.activity:activity-compose:1.7.2")
                 api("androidx.appcompat:appcompat:1.6.1")
                 api("androidx.core:core-ktx:1.10.1")
+
+                implementation("com.google.maps.android:maps-compose:2.11.4")
+                implementation("com.google.android.gms:play-services-maps:18.1.0")
             }
         }
         val iosX64Main by getting
